@@ -67,7 +67,7 @@ jobs:
         
       # Upload the built files as artifacts to be used in the deploy job
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3  # Make sure to use v3
+        uses: actions/upload-artifact@v2  # Use v2 instead of v3 for compatibility
         with:
           name: dist-files
           path: dist
@@ -79,7 +79,7 @@ jobs:
     steps:
       # Download the build artifacts from the previous job
       - name: Get build artifacts
-        uses: actions/download-artifact@v3  # Ensure you're using v3 here
+        uses: actions/download-artifact@v2  # Use v2 instead of v3 for compatibility
         with:
           name: dist-files
           
@@ -94,3 +94,4 @@ jobs:
       # Placeholder for the actual deployment step
       - name: Deploy
         run: echo "Deploying..."
+
