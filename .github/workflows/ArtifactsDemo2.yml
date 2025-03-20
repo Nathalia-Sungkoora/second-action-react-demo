@@ -67,7 +67,7 @@ jobs:
         
       # Upload the built files as artifacts to be used in the deploy job
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3  # Ensure you're using v3 here
+        uses: actions/upload-artifact@v3  # Make sure to use v3
         with:
           name: dist-files
           path: dist
