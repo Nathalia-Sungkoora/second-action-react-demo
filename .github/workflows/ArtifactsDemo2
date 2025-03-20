@@ -1,0 +1,53 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main  # Trigger this workflow when changes are pushed to the main branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner for the job
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3  # Checkout the repository code
+
+    - name: Cache npm dependencies
+      uses: actions/cache@v3  # Cache npm dependencies to speed up the process
+      with:
+        path: ~/.npm  # Cache the npm dependencies
+        key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}  # Cache key based on package-lock
+
+    - name: Install dependencies
+      run: npm ci  # Install dependencies using npm ci (clean install)
+
+    - name: Build website
+      run: npm run build  # Run npm build to generate the dist/ folder (production build)
+
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3  # Upload the dist/ folder as a build artifact
+      with:
+        name: dist-files  # Name of the artifact being uploaded
+        path: dist  # Path to the dist/ folder
+
+  deploy:
+    needs: build  # This job will only run after the build job completes
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner for the job
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3  # Checkout the repository code again for the deploy job
+
+    - name: Download build artifacts
+      uses: actions/download-artifact@v3  # Download the dist/ folder from the build job
+      with:
+        name: dist-files  # Artifact name to download
+
+    - name: List contents of dist folder
+      run: ls -R dist  # List all files in the dist/ folder to verify successful download
+
+    - name: Deploy
+      run: |
+        echo "Deploying files..."  # Placeholder for deployment commands
+        # Add your deployment steps here, such as deploying to GitHub Pages or a server
