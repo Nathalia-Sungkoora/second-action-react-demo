@@ -10,42 +10,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Check out the code from your repository
-      - name: Check out code
+      # Checkout the code
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js (for building React project)
+      # Set up Node.js (assuming you're using Node.js)
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'  # Use the Node.js version you need
+          node-version: '18'
 
-      # Step 3: Install dependencies
+      # Install dependencies and build the project
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install
+          npm run build
 
-      # Step 4: Build the project
-      - name: Build project
-        run: npm run build
-
-      # Step 5: Upload the build output as an artifact
-      - name: Upload dist files
+      # Upload build artifacts
+      - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: dist-files        # Name of the artifact
-          path: dist/             # Path to the build directory (dist)
-
-  deploy:
-    needs: build  # Ensure this job only runs after the 'build' job
-    runs-on: ubuntu-latest
-
-    steps:
-      # Step 6: Download the artifact from the build job
-      - name: Download dist files
-        uses: actions/download-artifact@v3
-        with:
-          name: dist-files       # Artifact name (should match the 'name' from the upload step)
-
-      # Step 7: Optionally deploy the build (This is just a placeholder for your deploy step)
-      - name: Deploy
-        run: echo "Deploying files..."  # Replace with your deploy commands, e.g., upload to a server or cloud
+          name: build-artifact
+          path: ./dist/
