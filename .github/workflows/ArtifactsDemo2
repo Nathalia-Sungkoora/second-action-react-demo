@@ -1,53 +1,51 @@
-name: Build and Deploy
+name: Build and Upload Artifact
 
 on:
   push:
     branches:
-      - main  # Trigger this workflow when changes are pushed to the main branch
+      - main
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Use the latest Ubuntu runner for the job
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3  # Checkout the repository code
+      # Step 1: Check out the code from your repository
+      - name: Check out code
+        uses: actions/checkout@v3
 
-    - name: Cache npm dependencies
-      uses: actions/cache@v3  # Cache npm dependencies to speed up the process
-      with:
-        path: ~/.npm  # Cache the npm dependencies
-        key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}  # Cache key based on package-lock
+      # Step 2: Set up Node.js (for building React project)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # Use the Node.js version you need
 
-    - name: Install dependencies
-      run: npm ci  # Install dependencies using npm ci (clean install)
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: npm install
 
-    - name: Build website
-      run: npm run build  # Run npm build to generate the dist/ folder (production build)
+      # Step 4: Build the project
+      - name: Build project
+        run: npm run build
 
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v3  # Upload the dist/ folder as a build artifact
-      with:
-        name: dist-files  # Name of the artifact being uploaded
-        path: dist  # Path to the dist/ folder
+      # Step 5: Upload the build output as an artifact
+      - name: Upload dist files
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist-files        # Name of the artifact
+          path: dist/             # Path to the build directory (dist)
 
   deploy:
-    needs: build  # This job will only run after the build job completes
-    runs-on: ubuntu-latest  # Use the latest Ubuntu runner for the job
+    needs: build  # Ensure this job only runs after the 'build' job
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3  # Checkout the repository code again for the deploy job
+      # Step 6: Download the artifact from the build job
+      - name: Download dist files
+        uses: actions/download-artifact@v3
+        with:
+          name: dist-files       # Artifact name (should match the 'name' from the upload step)
 
-    - name: Download build artifacts
-      uses: actions/download-artifact@v3  # Download the dist/ folder from the build job
-      with:
-        name: dist-files  # Artifact name to download
-
-    - name: List contents of dist folder
-      run: ls -R dist  # List all files in the dist/ folder to verify successful download
-
-    - name: Deploy
-      run: |
-        echo "Deploying files..."  # Placeholder for deployment commands
-        # Add your deployment steps here, such as deploying to GitHub Pages or a server
+      # Step 7: Optionally deploy the build (This is just a placeholder for your deploy step)
+      - name: Deploy
+        run: echo "Deploying files..."  # Replace with your deploy commands, e.g., upload to a server or cloud
