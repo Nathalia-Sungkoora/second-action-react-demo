@@ -28,7 +28,7 @@ jobs:
 
       # Upload build artifacts
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2  # Change this to v2 if v3 has an issue
         with:
           name: build-artifact
           path: ./dist/
