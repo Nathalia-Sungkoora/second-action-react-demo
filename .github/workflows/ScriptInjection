@@ -1,17 +1,23 @@
-name: Label Issues (Script Injection Example)  # Define the name of the GitHub Actions workflow
+name: Label Issues (Script Injection Example)  # Name of the GitHub Actions workflow
+
 on:
-  issues:  # Trigger workflow when an issue event occurs
+  issue:  # Trigger the workflow on issue events
     types:
-      - opened  # Only trigger when an issue is opened
+      - opened  # Trigger only when an issue is opened
+
 jobs:
-  assign-label:  # Define a job to assign a label
-    runs-on: ubuntu-latest  # Run the job on the latest Ubuntu runner
+  assign-label:  # Define the job to assign a label or take action based on the issue title
+    runs-on: ubuntu-latest  # Run the job on the latest Ubuntu runner provided by GitHub
+
     steps:
-      - name: Assign label  # Name of the step to assign a label
-        run: |  # Run a bash script in the step
-          issue_title="${{ github.event.issue.title }}"  # Get the title of the issue
-          if [[ "$issue_title" == *"bug"* ]]; then  # Check if the title contains "bug"
-            echo "Issue is about a bug!"  # Print message if it's a bug-related issue
+      - name: Check if issue is bug-related  # Name of the step that checks if the issue is about a bug
+        run: |
+          # Get the title of the opened issue from the GitHub event context
+          issue_title="${{ github.event.issue.title }}"
+
+          # Check if the issue title contains the word "bug" (case-sensitive)
+          if [[ "$issue_title" == *"bug"* ]]; then  
+            echo "Issue is about a bug!"  # Print a message indicating the issue is bug-related
           else
-            echo "Issue is not about a bug"  # Print message if it's not a bug-related issue
+            echo "Issue is not about a bug"  # Print a message indicating the issue is not bug-related
           fi
